@@ -27,12 +27,12 @@
 				</button>
 
 				<div class="flex gap-2 items-center">
-					<button v-if=" isLastCatFactIndex " v-tooltip=" { content: 'Fetch more fun cat facts!' } " class="app-btn"
-						v-on:click=" fetchSomeCatFacts ">
+					<button v-if=" isLastCatFactIndex " ref="prevBtn" v-tooltip=" { content: 'Fetch more fun cat facts!' } "
+						class="app-btn" v-on:click=" fetchSomeCatFacts ">
 						<i v-if=" catFactLoading " class="fa-solid fa-spinner fa-spin"></i>
 						<i v-else class="fa-solid fa-cat"></i>
 					</button>
-					<button class="app-btn" v-bind:disabled=" isLastCatFactIndex " v-on:click=" fetchNextFact ">
+					<button ref="nextBtn" class="app-btn" v-bind:disabled=" isLastCatFactIndex " v-on:click=" fetchNextFact ">
 						Next Fact
 					</button>
 				</div>
@@ -52,18 +52,24 @@ import { useToast, POSITION } from 'vue-toastification'
 
 const toast = useToast()
 
-const cacheKey = 'cat-facts-cache'
+const cacheKey = 'cat-facts'
 const catFacts = ref<CatFact[]>( [] )
 
 const catImageLoading = ref( false )
 const catFactLoading = ref( true )
 const loading = computed( () => catFactLoading.value || catImageLoading.value )
+
 const currentCatFactIndex = ref( 0 )
 const currentCatFact = computed( () => catFacts.value[ currentCatFactIndex.value ] )
 const currentCatFactText = computed( () => currentCatFact.value?.text )
 const currentCatFactImage = computed( () => currentCatFact.value?.image )
 const isMissingCatImage = computed( () => !catImageLoading.value && currentCatFactImage.value === 'missing' )
 const isLastCatFactIndex = computed( () => currentCatFactIndex.value === catFacts.value.length - 1 )
+
+// for testing
+const nextBtn = ref( null )
+const prevBtn = ref( null )
+
 watchEffect( async () => {
 	if ( !loading.value && !currentCatFactImage.value ) {
 		const catImage = await generateCatImage()
@@ -85,9 +91,6 @@ watch( catFacts, arr => {
 function cacheCatFactsArray () {
 	const hopefullyLimitedArrayString = JSON.stringify( catFacts.value )
 	localStorage.setItem( cacheKey, hopefullyLimitedArrayString )
-}
-function mapCatFacts ( stringFacts: string[] ) {
-	return stringFacts.map( ( fact ) => ( { text: fact, image: '' } ) )
 }
 function updateCatFactsArray ( facts: CatFact[] ) {
 	if ( facts?.length ) {
@@ -127,16 +130,8 @@ const fetchSomeCatFacts = async () => {
 /* 
 	Cat facts UI
 */
-const fetchNextFact = async () => {
-	if ( catFacts.value.length > currentCatFactIndex.value ) {
-		currentCatFactIndex.value += 1
-	}
-}
-const fetchPreviousFact = async () => {
-	if ( currentCatFactIndex.value ) {
-		currentCatFactIndex.value -= 1
-	}
-}
+const fetchNextFact = () => currentCatFactIndex.value += 1
+const fetchPreviousFact = () => currentCatFactIndex.value -= 1
 
 onMounted( () => {
 	const catFactsFromCache = localStorage.getItem( cacheKey )
