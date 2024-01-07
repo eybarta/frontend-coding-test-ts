@@ -18,7 +18,7 @@
 			</div>
 		</div>
 	</nav>
-	<main class="flex justify-start px-12">
+	<main class="flex justify-center px-12">
 		<router-view />
 	</main>
 </template>

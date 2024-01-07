@@ -2,8 +2,6 @@ import axios from 'axios';
 
 const GENERATE_API = 'https://api.openai.com/v1/images/generations';
 const { VITE_OPENAI_KEY } = import.meta.env;
-console.log('VITE_OPENAI_KEY: ', VITE_OPENAI_KEY);
-
 
 async function saveImageUrlToLocalCache(imageUrl: string) {
   try {
@@ -39,10 +37,8 @@ export default async function generateImage(inputText: string) {
       }
     );
     const image64 = response.data.data[0].b64_json; // Modify according to the actual response structure
-    console.log('##home b64_json: ', image64);
     return image64
-  } catch (e) {
-    console.error("Error generating image: >> ", e)
-		return e
+  } catch (error) {
+		return error
   }
 };

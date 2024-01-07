@@ -48,6 +48,9 @@ import generateImage from '@services/imageServices.ts'
 import generateCatFacts from '@services/catFactGenerator.ts'
 import Preloader from '@components/Preloader.vue'
 import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
+import { useToast, POSITION } from 'vue-toastification'
+
+const toast = useToast()
 
 const cacheKey = 'cat-facts-cache'
 const catFacts = ref<CatFact[]>( [] )
@@ -108,8 +111,16 @@ function updateCatImage ( index: number, image: string ) {
 */
 const fetchSomeCatFacts = async () => {
 	catFactLoading.value = true
-	const facts: CatFact[] = await generateCatFacts()
-	updateCatFactsArray( facts )
+	if ( catFacts.value.length < 5 ) {
+		const facts: CatFact[] = await generateCatFacts()
+		updateCatFactsArray( facts )
+	} else {
+		toast.success( "This is only a demo :)", {
+			toastClassName: "toast-alert",
+			position: POSITION.BOTTOM_LEFT
+		} )
+
+	}
 	catFactLoading.value = false
 }
 
@@ -137,23 +148,27 @@ onMounted( () => {
 	}
 } )
 </script>
-<style scoped>
+<style>
+.Vue-Toastification__toast--success {
+	@apply !bg-teal-500;
+}
+
 .app-btn {
-  @apply bg-teal-400 hover:bg-teal-500 duration-200;
-  @apply rounded px-4 flex justify-center items-center text-white text-sm font-bold h-8;
+	@apply bg-teal-400 hover:bg-teal-500 duration-200;
+	@apply rounded px-4 flex justify-center items-center text-white text-sm font-bold h-8;
 }
 
 .app-btn[disabled] {
-  @apply opacity-40 pointer-events-none;
+	@apply opacity-40 pointer-events-none;
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity .369s;
+	transition: opacity .369s;
 }
 
 .fade-enter,
 .fade-leave-to {
-  @apply opacity-0;
+	@apply opacity-0;
 }
 </style>

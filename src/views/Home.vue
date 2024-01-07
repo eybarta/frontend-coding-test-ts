@@ -1,9 +1,9 @@
 <template>
-	<div class="justify-start max-w-md mt-10 min-w-[33%]">
+	<div class="justify-center max-w-md mt-10 min-w-[33%]">
 		<!-- <h1 class="font-extrabold tracking-tigh text-3xl leading-10">
       Ready for the challenge?
     </h1> -->
-		<div class="mt-8 pr-4 border-r border-gray-300">
+		<div class="mt-8 pr-4">
 			<section>
 				<h2 class="font-bold text-2xl leading-6">Exercise 1</h2>
 				<CatFactPlus> </CatFactPlus>
