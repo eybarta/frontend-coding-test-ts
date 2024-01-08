@@ -1,14 +1,34 @@
-# Frontend Coding Challenge
+# Frontend Coding Challenge [by Eyal Barta]
 
-Clone this repo, run `npm install` and start the project using `npm run dev`.
-The instructions for completing the task can be found in the site that will launch.
+This is a minimal demo project for the frontend coding challenge.
 
-## Additional Hints
+### Flow
 
-### Recommended IDE Setup
+- API call to retrieve random cat fact (unfortunately the public api doesn't produce very random results)
+- Once the fact is retrieved, it's displayed in the UI
+- Then another call is made to a netlify function that is used to call openAI and generate an image, using the fact as prompt.
+- The user can click on the image to get a catty response.
+- The user can click on buttons to show next/last cat fact.
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+### Caveats
+- Currently only 5 facts are retrieved.
+- The openAI calls are to the dall-e-2 model so the images are pretty bad,
+this is just for demo purposes, as I'm returning a base64 and saving it to localstorage.
+ In real-world app of course we could use a much better model (dall-e-3)
+to generate amazing images, then optimize and save them with something like cloudinary.
+- I created initial cypress testing, demonstrating access to vue component, 
+of course much more can be done but this is sufficient for demo I hope.
 
-### Type Support For `.vue` Imports in TS
+## Project Setup
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's `.vue` type support plugin by running `Volar: Switch TS Plugin on/off` from VSCode command palette.
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+I really appreciate the time and opportunity, thank you!
