@@ -19,19 +19,5 @@ to generate amazing images, then optimize and save them with something like clou
 - I created initial cypress testing, demonstrating access to vue component, 
 of course much more can be done but this is sufficient for demo I hope.
 
-## Project Setup
 
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-
-
-
-I really appreciate the time and opportunity, thank you!
+### I really appreciate the time and opportunity, thank you!
