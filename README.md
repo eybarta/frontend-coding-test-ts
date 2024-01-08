@@ -5,8 +5,8 @@ This is a minimal demo project for the frontend coding challenge.
 ### Flow
 
 - API call to retrieve random cat fact (unfortunately the public api doesn't produce very random results)
-- Once the fact is retrieved, it's displayed in the UI
-- Then another call is made to a netlify function that is used to call openAI and generate an image, using the fact as prompt.
+- Once the fact is retrieved, it's displayed in the UI.
+- Another call is made to netlify function in order to call openAI and generate image, using the fact as prompt.
 - The user can click on the image to get a catty response.
 - The user can click on buttons to show next/last cat fact.
 
@@ -30,5 +30,8 @@ npm install
 ```sh
 npm run dev
 ```
+
+
+
 
 I really appreciate the time and opportunity, thank you!
