@@ -1,6 +1,7 @@
 <template>
 	<div>
-		<div class="p-4 mt-4 flex flex-col items-center justify-center border border-teal-300/20 bg-teal-600/10 rounded">
+		<div
+			class="min-h-svh p-4 mt-4 flex flex-col items-center justify-center border border-teal-300/20 bg-teal-600/10 rounded">
 			<h4 class="font-bold text-xs text-gray-700">CAT FACT</h4>
 			<span>🐱🐱🐱🐱</span>
 			<Preloader v-if=" catFactLoading " label="Get ready for a cat fact"></Preloader>
@@ -27,12 +28,13 @@
 				</button>
 
 				<div class="flex gap-2 items-center">
-					<button v-if=" isLastCatFactIndex " ref="prevBtn" v-tooltip=" { content: 'Fetch more fun cat facts!' } "
+					<button v-if=" loading || isLastCatFactIndex " ref="prevBtn" v-tooltip=" { content: 'Fetch more fun cat facts!' } "
 						class="app-btn" v-on:click=" fetchSomeCatFacts ">
 						<i v-if=" catFactLoading " class="fa-solid fa-spinner fa-spin"></i>
-						<i v-else class="fa-solid fa-cat"></i>
+						<i v-else class="fa-solid fa-cat" v-bind:class=" [ mockFetchCats ? 'fa-spin' : '' ] "></i>
 					</button>
-					<button ref="nextBtn" class="app-btn" v-bind:disabled=" isLastCatFactIndex " v-on:click=" fetchNextFact ">
+					<button ref="nextBtn" class="app-btn" v-bind:disabled=" loading || isLastCatFactIndex "
+						v-on:click=" fetchNextFact ">
 						Next Fact
 					</button>
 				</div>
@@ -49,12 +51,14 @@ import generateCatFacts from '@services/catFactGenerator.ts'
 import Preloader from '@components/Preloader.vue'
 import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
 import { useToast, POSITION } from 'vue-toastification'
+import debounce from 'lodash.debounce';
 
 const toast = useToast()
 
 const cacheKey = 'cat-facts'
 const catFacts = ref<CatFact[]>( [] )
 
+const mockFetchCats = ref( false )
 const catImageLoading = ref( false )
 const catFactLoading = ref( true )
 const loading = computed( () => catFactLoading.value || catImageLoading.value )
@@ -77,7 +81,6 @@ watchEffect( async () => {
 			updateCatImage( currentCatFactIndex.value, catImage )
 		} else {
 			updateCatImage( currentCatFactIndex.value, 'missing' )
-
 		}
 	}
 } )
@@ -118,10 +121,14 @@ const fetchSomeCatFacts = async () => {
 		const facts: CatFact[] = await generateCatFacts()
 		updateCatFactsArray( facts )
 	} else {
+		mockFetchCats.value = true
 		toast.success( "This is only a demo :)", {
 			toastClassName: "toast-alert",
 			position: POSITION.BOTTOM_LEFT
 		} )
+		setTimeout( () => {
+			mockFetchCats.value = false
+		}, 3333 );
 
 	}
 	catFactLoading.value = false
@@ -130,8 +137,8 @@ const fetchSomeCatFacts = async () => {
 /* 
 	Cat facts UI
 */
-const fetchNextFact = () => currentCatFactIndex.value += 1
-const fetchPreviousFact = () => currentCatFactIndex.value -= 1
+const fetchNextFact = debounce( () => currentCatFactIndex.value += 1, 300 )
+const fetchPreviousFact = debounce( () => currentCatFactIndex.value -= 1, 300 )
 
 onMounted( () => {
 	const catFactsFromCache = localStorage.getItem( cacheKey )

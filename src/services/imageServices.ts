@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const GENERATE_API = 'https://api.openai.com/v1/images/generations';
-const { VITE_OPENAI_KEY } = import.meta.env;
+const NETLIFY_BASE_URL = 'https://imagies.netlify.app';
 
 async function saveImageUrlToLocalCache(imageUrl: string) {
   try {
@@ -20,24 +19,11 @@ async function saveImageUrlToLocalCache(imageUrl: string) {
 export default async function generateImage(inputText: string) {
 	if (!inputText) return
   try {
-		const prompt = `hyper realistic vivid scene depicting this description - ${inputText}`
-    const response = await axios.post(GENERATE_API,
-      {
-        prompt,
-        n: 1,
-        size: "256x256",
-        model: "dall-e-2",
-				response_format: 'b64_json'
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${VITE_OPENAI_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    const image64 = response.data.data[0].b64_json; // Modify according to the actual response structure
-    return image64
+		const prompt = `Create a highly detailed, friendly, cute, fun and vivid cartoon-style image, focusing on the unique characteristics of cats, ensuring no text or unrelated elements appear. Depict visual representations of cat facts, maintaining the highest quality possible within the 512x512 size limit - reference: ${inputText}`
+		const query = `prompt=${prompt}&size=512x512&model=dall-e-2`
+		const response = await fetch(`${NETLIFY_BASE_URL}/image-generate-ai?${query}`)
+		const data = await response.json()
+		return data?.base64Image
   } catch (error) {
 		return error
   }
