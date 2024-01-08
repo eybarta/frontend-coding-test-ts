@@ -19,8 +19,8 @@ async function saveImageUrlToLocalCache(imageUrl: string) {
 export default async function generateImage(inputText: string) {
 	if (!inputText) return
   try {
-		const prompt = `Create a highly detailed, friendly, cute, fun and vivid cartoon-style image, focusing on the unique characteristics of cats, ensuring no text or unrelated elements appear. Depict visual representations of cat facts, maintaining the highest quality possible within the 512x512 size limit - reference: ${inputText}`
-		const query = `prompt=${prompt}&size=512x512&model=dall-e-2`
+		const prompt = `detailed and sharp pixel art depiction clean from LETTERS or any text elements of ${inputText}`
+		const query = `prompt=${prompt}&size=256x256&model=dall-e-2`
 		const response = await fetch(`${NETLIFY_BASE_URL}/image-generate-ai?${query}`)
 		const data = await response.json()
 		return data?.base64Image

@@ -1,28 +1,27 @@
 <template>
 	<div>
 		<div
-			class="min-h-svh p-4 mt-4 flex flex-col items-center justify-center border border-teal-300/20 bg-teal-600/10 rounded">
-			<h4 class="font-bold text-xs text-gray-700">CAT FACT</h4>
-			<span>🐱🐱🐱🐱</span>
+			class="min-h-[75vh] relative p-4 mt-4 flex flex-col items-center justify-evenly border border-teal-300/20 bg-teal-600/10 rounded">
+			<div class="py-2 text-2xl">🐱🐱🐱🐱</div>
 			<Preloader v-if=" catFactLoading " label="Get ready for a cat fact"></Preloader>
 			<div v-else class="cat-fact mt-8">
 				<transition appear mode="out-in" name="fade">
-					<p v-bind:key=" `currentCatFactText-${ currentCatFactIndex }` " class="text-teal-700 font-bold"
+					<p v-bind:key=" `currentCatFactText-${ currentCatFactIndex }` " class="text-teal-700 font-bold text-xl"
 						v-text=" currentCatFactText "></p>
 				</transition>
 				<transition appear mode="out-in" name="fade">
-					<Preloader v-if=" catImageLoading " label="Wait for the image as well!"></Preloader>
+					<Preloader v-if=" catImageLoading " class="mt-8" label="Wait for the image!"></Preloader>
 					<div v-else v-bind:key=" `currentCatFactImage-${ currentCatFactIndex }` "
-						class="mt-4 rounded overflow-hidden border-8 border-teal-200/60">
-						<img class="rounded w-full" v-bind:src=" isMissingCatImage
+						class="mt-8 rounded overflow-hidden border-8 border-teal-200/60">
+						<img class="rounded w-full cursor-pointer" v-bind:src=" isMissingCatImage
 								? '/src/assets/missing-cat.png'
 								: `data:image/png;base64,${ currentCatFactImage }`
-							" v-bind:alt=" currentCatFactText " />
+							" v-bind:alt=" currentCatFactText " v-on:click=" touchedACat " />
 					</div>
 				</transition>
 			</div>
 
-			<div class="w-full flex items-center justify-between mt-8">
+			<div class="w-full flex items-center justify-between mt-auto">
 				<button class="app-btn" v-bind:disabled=" currentCatFactIndex === 0 " v-on:click=" fetchPreviousFact ">
 					Last Fact
 				</button>
@@ -52,6 +51,7 @@ import Preloader from '@components/Preloader.vue'
 import { computed, nextTick, onMounted, ref, watch, watchEffect } from 'vue'
 import { useToast, POSITION } from 'vue-toastification'
 import debounce from 'lodash.debounce';
+import sample from 'lodash.sample';
 
 const toast = useToast()
 
@@ -74,14 +74,24 @@ const isLastCatFactIndex = computed( () => currentCatFactIndex.value === catFact
 const nextBtn = ref( null )
 const prevBtn = ref( null )
 
-watchEffect( async () => {
+
+watchEffect( () => {
 	if ( !loading.value && !currentCatFactImage.value ) {
-		const catImage = await generateCatImage()
-		if ( typeof catImage === 'string' ) {
-			updateCatImage( currentCatFactIndex.value, catImage )
-		} else {
-			updateCatImage( currentCatFactIndex.value, 'missing' )
-		}
+		catImageLoading.value = true
+		generateCatImage()
+			.then( catImage => {
+				if ( typeof catImage === 'string' ) {
+					updateCatImage( currentCatFactIndex.value, catImage );
+				}
+			} )
+			.catch( error => {
+				console.error( "Error generating cat image:", error );
+				updateCatImage( currentCatFactIndex.value, 'missing' );
+			} ).finally( () => {
+				catImageLoading.value = false
+			} )
+
+
 	}
 } )
 
@@ -100,14 +110,49 @@ function updateCatFactsArray ( facts: CatFact[] ) {
 		catFacts.value.push( ...facts )
 	}
 }
+
+const catResponses = [
+	'Hey, nice to meet you :)',
+	'Oh, hello there, human!',
+	'Purrhaps you have treats?',
+	'Soft touches are the best, thank you!',
+	'Meow-lo! Are we friends now?',
+	'That was a pawsome pet!',
+	'I\'m feline good about this!',
+	'You\'ve got the magic touch!',
+	'Paws for a moment, that was lovely!',
+	'More pets, please?'
+];
+
+type FeelType = 'warning' | 'success' | 'error' | 'info';
+const feel: FeelType[] = [ 'warning', 'success', 'error', 'info' ];
+
+function touchedACat () {
+	const sampleCatRes = sample( catResponses )
+	const sampleFeel = sample( feel ) as FeelType;
+	toast[ sampleFeel ]( sampleCatRes, {
+		toastClassName: "toast-alert",
+		position: POSITION.BOTTOM_LEFT
+	} )
+}
 /* 
 	Cat facts image generation
 */
 async function generateCatImage () {
-	catImageLoading.value = true
-	const res = await generateImage( currentCatFactText.value )
-	catImageLoading.value = false
-	return res || ''
+	console.log( '2 generateCatImage ' );
+	return new Promise( ( resolve, reject ) => {
+		generateImage( currentCatFactText.value ).then( ( res: string ) => {
+			console.log( '33 res: ', res );
+			if ( res ) {
+				resolve( res )
+			} else {
+				reject( new Error( "No image was generated" ) );
+			}
+			// catImageLoading.value = false
+		} )
+
+
+	} )
 }
 function updateCatImage ( index: number, image: string ) {
 	catFacts.value[ index ].image = image

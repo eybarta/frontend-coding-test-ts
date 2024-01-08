@@ -8,7 +8,7 @@
 				<div class="cat__head cat-img"></div>
 			</div>
 		</div>
-		<span v-if=" label " class="text-teal-600" v-text=" label "></span>
+		<span v-if=" label " class="text-orange-400 text-lg font-semibold" v-text=" label "></span>
 	</div>
 </template>
 
@@ -79,7 +79,7 @@ defineProps( {
   top: 0;
   right: 0;
   background-position: 100% 0;
-  transform: rotate(90deg);
+  transform: rotate(80deg);
   transform-origin: 0 100%;
 }
 
@@ -100,7 +100,7 @@ defineProps( {
 }
 
 .cat__body:nth-of-type(2) {
-  animation-delay: .17s;
+  animation-delay: .2s;
 }
 
 .cat__body::before {
