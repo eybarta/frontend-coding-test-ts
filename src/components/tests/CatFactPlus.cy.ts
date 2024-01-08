@@ -1,7 +1,5 @@
-import CatFactPlus from './CatFactPlus.vue'
-import generateImage from '@services/imageServices.ts'
-import generateCatFacts from '@services/catFactGenerator.ts'
-import { mount } from'@cypress/vue'
+import CatFactPlus from '../CatFactPlus.vue'
+
 describe('<CatFactPlus />', () => {
   it('renders', () => {
     // see: https://on.cypress.io/mounting-vue
